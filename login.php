@@ -55,6 +55,7 @@ if ( ! function_exists( 'custom_login_form_shortcode_handler' ) ) {
         ob_start();
         ?>
         <div class="custom-login-form-container">
+            <p><?php esc_html_e( 'Fill out your details to login', 'custom-login' ); ?></p>
             <form id="custom-login-form" class="custom-login-form" method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>">
 
                 <input type="hidden" name="redirect_to" value="<?php echo esc_attr( $redirect_url ); ?>" />
@@ -72,7 +73,7 @@ if ( ! function_exists( 'custom_login_form_shortcode_handler' ) ) {
                 <?php if ( 'yes' === $atts['show_remember_me'] ) : ?>
                 <p class="forgetmenot">
                     <label for="rememberme">
-                        <input name="rememberme" type="checkbox" id="rememberme" class="form-check-input" value="forever" /> <?php esc_html_e( 'Remember Me', 'custom-login' ); ?>
+                        <input name="rememberme" type="checkbox" id="rememberme" value="forever" /> <?php esc_html_e( 'Remember Me', 'custom-login' ); ?>
                     </label>
                 </p>
                 <?php endif; ?>
@@ -82,26 +83,19 @@ if ( ! function_exists( 'custom_login_form_shortcode_handler' ) ) {
                     <input type="hidden" name="testcookie" value="1" />
                 </p>
 
-                <?php
-                $show_lost_password_link = ( 'yes' === $atts['show_lost_password'] );
-                $users_can_register = get_option( 'users_can_register' );
-                $show_register_link = ( $users_can_register && 'yes' === $atts['show_register'] );
-                ?>
+                <p class="register-links">
+                    <?php
+                    $couple_dashboard_url = home_url( '/couple-dashboard' );
+                    $vendor_dashboard_url = home_url( '/vendor-dashboard' );
 
-                <?php if ( $show_lost_password_link || $show_register_link ) : ?>
-                    <p class="register-links">
-                        <?php if ( $show_lost_password_link ) : ?>
-                            <a href="<?php echo esc_url( wp_lostpassword_url( $redirect_url ) ); ?>"><?php esc_html_e( 'Lost your password?', 'custom-login' ); ?></a>
-                        <?php endif; ?>
-
-                        <?php if ( $show_register_link ) : ?>
-                            <?php if ( $show_lost_password_link ) : ?>
-                                <span class="login-separator"> | </span>
-                            <?php endif; ?>
-                            <a href="<?php echo esc_url( wp_registration_url() ); ?>"><?php esc_html_e( 'Register', 'custom-login' ); ?></a>
-                        <?php endif; ?>
-                    </p>
-                <?php endif; ?>
+                    echo sprintf(
+                        /* translators: 1: Couple dashboard URL, 2: Vendor dashboard URL */
+                        esc_html__( 'Don\'t have an account? %1$s, or %2$s', 'custom-login' ),
+                        sprintf( '<a href="%s">%s</a>', esc_url( $couple_dashboard_url ), esc_html__( 'Register as a couple', 'custom-login' ) ),
+                        sprintf( '<a href="%s">%s</a>', esc_url( $vendor_dashboard_url ), esc_html__( 'register as a vendor', 'custom-login' ) )
+                    );
+                    ?>
+                </p>
 
             </form>
         </div>
