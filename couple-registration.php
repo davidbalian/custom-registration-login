@@ -96,7 +96,7 @@ function couple_registration_form_shortcode( $atts ) {
 }
 
 // Register the shortcode.
-add_shortcode( 'couple_registration_form', 'couple_registration_form_shortcode' );
+add_shortcode( 'couple_registration', 'couple_registration_form_shortcode' );
 
 /**
  * Function to handle the couple registration form submission via standard POST.
