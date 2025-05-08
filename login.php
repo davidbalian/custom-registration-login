@@ -85,8 +85,8 @@ if ( ! function_exists( 'custom_login_form_shortcode_handler' ) ) {
 
                 <p class="register-links">
                     <?php
-                    $couple_dashboard_url = home_url( '/couple-dashboard' );
-                    $vendor_dashboard_url = home_url( '/vendor-dashboard' );
+                    $couple_dashboard_url = home_url( '/register' );
+                    $vendor_dashboard_url = home_url( '/register-vendor' );
 
                     echo sprintf(
                         /* translators: 1: Couple dashboard URL, 2: Vendor dashboard URL */
