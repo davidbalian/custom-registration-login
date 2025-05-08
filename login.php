@@ -21,13 +21,13 @@ if ( ! function_exists( 'custom_login_form_shortcode_handler' ) ) {
         // Default attributes
         $atts = shortcode_atts(
             array(
-                'redirect' => '', // Default redirect URL after login (empty means current page)
+                'redirect' => '', // Default redirect URL after login (empty means current page or home_url('/') if not specified further down)
                 'show_lost_password' => 'yes',
                 'show_register' => 'yes',
                 'show_remember_me' => 'yes',
                 'show_logged_in_message' => 'yes',
                 'login_button_text' => esc_html__( 'Log In', 'custom-login' ),
-                'username_label' => esc_html__( 'Username or Email Address', 'custom-login' ),
+                'username_label' => esc_html__( 'Email or username', 'custom-login' ),
                 'password_label' => esc_html__( 'Password', 'custom-login' ),
             ),
             $atts,
@@ -37,7 +37,7 @@ if ( ! function_exists( 'custom_login_form_shortcode_handler' ) ) {
         if ( is_user_logged_in() ) {
             if ( 'yes' === $atts['show_logged_in_message'] ) {
                 $current_user = wp_get_current_user();
-                $logout_redirect_url = ! empty( $atts['redirect'] ) ? $atts['redirect'] : home_url();
+                $logout_redirect_url = ! empty( $atts['redirect'] ) ? esc_url( $atts['redirect'] ) : home_url( '/' );
                 return sprintf(
                     /* translators: 1: User display name, 2: Link opening tag, 3: Link closing tag. */
                     esc_html__( 'You are logged in as %1$s (%2$sLogout%3$s)', 'custom-login' ),
@@ -46,37 +46,40 @@ if ( ! function_exists( 'custom_login_form_shortcode_handler' ) ) {
                     '</a>'
                 );
             }
-            return ''; // Return empty if user is logged in and message is disabled
+            return '';
         }
 
-        // Determine redirect URL
-        $redirect_url = ! empty( $atts['redirect'] ) ? esc_url( $atts['redirect'] ) : esc_url( home_url( add_query_arg( array(), $GLOBALS['wp']->request ) ) );
-
+        // Determine redirect URL, defaulting to home_url('/') if not specified, like custom-login.php
+        $redirect_url = ! empty( $atts['redirect'] ) ? esc_url( $atts['redirect'] ) : esc_url( home_url( '/' ) );
 
         ob_start();
         ?>
         <div class="custom-login-form-container">
-            <form class="custom-login-form" name="loginform" id="loginform" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" method="post">
+            <form id="custom-login-form" class="custom-login-form" method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>">
+
+                <input type="hidden" name="redirect_to" value="<?php echo esc_attr( $redirect_url ); ?>" />
+
                 <p class="login-username">
-                    <label for="user_login_<?php echo esc_attr( uniqid() ); ?>"><?php echo esc_html( $atts['username_label'] ); ?></label>
-                    <input type="text" name="log" id="user_login_<?php echo esc_attr( uniqid() ); ?>" class="input" value="" size="20" />
+                    <label for="user_login"><?php echo esc_html( $atts['username_label'] ); ?><br />
+                    <input type="text" name="log" id="user_login" class="form-control input-text username-field" value="" size="20" autocapitalize="off" /></label>
                 </p>
+
                 <p class="login-password">
-                    <label for="user_pass_<?php echo esc_attr( uniqid() ); ?>"><?php echo esc_html( $atts['password_label'] ); ?></label>
-                    <input type="password" name="pwd" id="user_pass_<?php echo esc_attr( uniqid() ); ?>" class="input" value="" size="20" />
+                    <label for="user_pass"><?php echo esc_html( $atts['password_label'] ); ?><br />
+                    <input type="password" name="pwd" id="user_pass" class="form-control input-text password-field" value="" size="20" /></label>
                 </p>
 
                 <?php if ( 'yes' === $atts['show_remember_me'] ) : ?>
-                <p class="login-remember">
-                    <label>
-                        <input name="rememberme" type="checkbox" id="rememberme_<?php echo esc_attr( uniqid() ); ?>" value="forever" /> <?php esc_html_e( 'Remember Me', 'custom-login' ); ?>
+                <p class="forgetmenot">
+                    <label for="rememberme">
+                        <input name="rememberme" type="checkbox" id="rememberme" class="form-check-input" value="forever" /> <?php esc_html_e( 'Remember Me', 'custom-login' ); ?>
                     </label>
                 </p>
                 <?php endif; ?>
 
                 <p class="login-submit">
-                    <input type="submit" name="wp-submit" id="wp-submit_<?php echo esc_attr( uniqid() ); ?>" class="button button-primary" value="<?php echo esc_attr( $atts['login_button_text'] ); ?>" />
-                    <input type="hidden" name="redirect_to" value="<?php echo esc_attr( $redirect_url ); ?>" />
+                    <input type="submit" name="wp-submit" id="wp-submit" class="btn btn-primary login-button" value="<?php echo esc_attr( $atts['login_button_text'] ); ?>" />
+                    <input type="hidden" name="testcookie" value="1" />
                 </p>
 
                 <?php
@@ -86,7 +89,7 @@ if ( ! function_exists( 'custom_login_form_shortcode_handler' ) ) {
                 ?>
 
                 <?php if ( $show_lost_password_link || $show_register_link ) : ?>
-                    <p class="login-links">
+                    <p class="register-links">
                         <?php if ( $show_lost_password_link ) : ?>
                             <a href="<?php echo esc_url( wp_lostpassword_url( $redirect_url ) ); ?>"><?php esc_html_e( 'Lost your password?', 'custom-login' ); ?></a>
                         <?php endif; ?>
