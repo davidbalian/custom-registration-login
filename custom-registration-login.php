@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Your custom code will go below this line
 
-require_once plugin_dir_path( __FILE__ ) . 'redirect-default-login.php';
+// require_once plugin_dir_path( __FILE__ ) . 'redirect-default-login.php';
 require_once plugin_dir_path( __FILE__ ) . 'login.php';
 require_once plugin_dir_path( __FILE__ ) . 'couple-registration.php';
 require_once plugin_dir_path( __FILE__ ) . 'vendor-registration.php';
