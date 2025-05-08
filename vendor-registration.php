@@ -362,4 +362,3 @@ function handle_vendor_registration_ajax() {
     ) );
     wp_die();
 }
-// --- END AJAX Implementation ---
